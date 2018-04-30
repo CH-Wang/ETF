@@ -23,8 +23,8 @@ def data_merger(df,new_df):
     base = df.iloc[0,0]
     # print(base)
     for index, row in df.iterrows():
-        if index < df.index.max()-8:
-            for i in range(10):
+        if index < df.index.max()-13:
+            for i in range(15):
                 next_row = df.iloc[index+i]
                 if (next_row['收盤價(元)'] > base):
                     market = 1
@@ -49,7 +49,7 @@ def data_finalizer(df, train_df, test_df):
     df = df.dropna(axis=0, how='any')
     df = df.sample(frac = 1).reset_index(drop=True)
     max_index = df.index.max()
-    cut_line = int(0.8*max_index)
+    cut_line = int(0.9*max_index)
     train_df = df.loc[df.index < cut_line]
     test_df = df.loc[df.index >= cut_line].reset_index(drop=True)
     return train_df, test_df

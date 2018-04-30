@@ -16,11 +16,11 @@ import numpy as np
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(5, 5)
-        self.fc2 = nn.Linear(5, 5)
-        self.fc3 = nn.Linear(5, 5)
-        self.fc4 = nn.Linear(5, 5)
-        self.fc5 = nn.Linear(5, 5)
+        self.fc1 = nn.Linear(10, 10)
+        self.fc2 = nn.Linear(10, 10)
+        self.fc3 = nn.Linear(10, 10)
+        self.fc4 = nn.Linear(10, 10)
+        self.fc5 = nn.Linear(10, 5)
 
     def forward(self, x):
         x = F.relu(self.fc1(x))
@@ -39,8 +39,8 @@ class ETFDataset(Dataset):
         return len(self.ETF)
 
     def __getitem__(self, index):
-        week = self.ETF.iloc[index, 1:6].tolist()
-        next_week = self.ETF.iloc[index, 6:11].tolist()
+        week = self.ETF.iloc[index, 1:11].tolist()
+        next_week = self.ETF.iloc[index, 11:16].tolist()
         week = torch.Tensor(week)
         next_week = torch.Tensor(next_week)
         return week, next_week
@@ -65,7 +65,7 @@ net = Net()
 criterion = nn.L1Loss()
 optimizer = optim.SGD(net.parameters(), lr=0.1)
 
-for epoch in range(15):  # loop over the dataset multiple times
+for epoch in range(10):  # loop over the dataset multiple times
 
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
@@ -100,13 +100,18 @@ torch.save(net.state_dict(), './model/model')
 diff_rate = 0
 total_diff = 0
 total = 0
+correct = 0
 for data in testloader:
     inputs, labels = data
     # print(inputs, labels)
     outputs = net(Variable(inputs))
-    # outputs = torch.round(outputs)
+    outputs = torch.round(outputs)
     print('inputs: \n',inputs,'\n\n outputs: \n',outputs,'\n\n')
     diff = torch.sum(torch.abs(outputs.data - labels))/5
+    # print('post:',(outputs == labels))
+    # print('post:',(outputs == labels).sum())
+    # print('post:',(outputs == labels).sum().item())
+    # correct += (outputs == labels).sum().item()
     
     # print (outputs.data, labels, diff)
     total += labels.size(0)
@@ -114,7 +119,10 @@ for data in testloader:
     total_diff += diff 
 
 diff_rate = total_diff/total
-print(diff_rate.data) 
+print(diff_rate.item()) 
+# print('Accuracy of the network on the ',total, ' test examples: %d %%' % (
+#     100 * correct / total))
+
 
 print('end')
 
