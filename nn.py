@@ -16,11 +16,11 @@ import numpy as np
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(15, 20)
-        self.fc2 = nn.Linear(20, 20)
-        self.fc3 = nn.Linear(20, 20)
-        self.fc4 = nn.Linear(20, 10)
-        self.fc5 = nn.Linear(10, 5)
+        self.fc1 = nn.Linear(19, 20, bias=True)
+        self.fc2 = nn.Linear(20, 20, bias=True)
+        self.fc3 = nn.Linear(20, 20, bias=True)
+        self.fc4 = nn.Linear(20, 10, bias=True)
+        self.fc5 = nn.Linear(10, 1, bias=True)
 
     def forward(self, x):
         x = F.relu(self.fc1(x))
@@ -39,11 +39,11 @@ class ETFDataset(Dataset):
         return len(self.ETF)
 
     def __getitem__(self, index):
-        week = self.ETF.iloc[index, 1:16].tolist()
-        next_week = self.ETF.iloc[index, 16:21].tolist()
-        week = torch.Tensor(week)
-        next_week = torch.Tensor(next_week)
-        return week, next_week
+        data = self.ETF.iloc[index, 1:20].tolist()
+        label = self.ETF.iloc[index, 20:21].tolist()
+        data = torch.Tensor(data)
+        label = torch.Tensor(label)
+        return data, label
 
 
 transformations = transforms.Compose([transforms.ToTensor()])
@@ -103,25 +103,17 @@ total = 0
 correct = 0
 for data in testloader:
     inputs, labels = data
-    # print(inputs, labels)
     outputs = net(Variable(inputs))
-    outputs = torch.round(outputs)
+    # outputs = torch.round(outputs)
+
     print('inputs: \n',inputs,'\n\n outputs: \n',outputs,'\n\n')
-    diff = torch.sum(torch.abs(outputs.data - labels))/5
-    # print('post:',(outputs == labels))
-    # print('post:',(outputs == labels).sum())
-    # print('post:',(outputs == labels).sum().item())
-    # correct += (outputs == labels).sum().item()
-    
-    # print (outputs.data, labels, diff)
+    correct += (outputs == labels).sum().item()
+
     total += labels.size(0)
     print('size = ',labels.size(0),'\n\n total =',total, '\n\n')
-    total_diff += diff 
 
-diff_rate = total_diff/total
-print(diff_rate.item())
-# print('Accuracy of the network on the ',total, ' test examples: %d %%' % (
-#     100 * correct / total))
+print('Accuracy of the network on the ',total, ' test examples: %d %%' % (
+    100 * correct / total))
 
 
 print('end')
