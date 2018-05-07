@@ -87,7 +87,7 @@ for epoch in range(10):  # loop over the dataset multiple times
         # print statistics
         running_loss += loss.data
         if i % 10 == 9:    # print every 10 mini-batches
-            print('[%d, %5d] loss: %.3f' %
+            print('[%d, %5d] loss: %.5f' %
                   (epoch + 1, i + 1, running_loss / 10))
             running_loss = 0.0
 
@@ -105,26 +105,40 @@ df = pd.DataFrame(df)
 for data in testloader:
     inputs, labels = data
     outputs = net(Variable(inputs))
-    # outputs = torch.round(outputs)
 
-    # print('inputs: \n',inputs,'\n\n outputs: \n',outputs,'\n\n')
+    # correct += (outputs == labels).sum().item()
+
+    inputs_data = inputs.detach().numpy()
     outputs_data = outputs.detach().numpy()
     labels_data = labels.detach().numpy()
+
+    
+    for i in range(len(outputs_data)):
+        base = inputs_data[i][-1]
+        outputs_val = outputs_data[i][0]
+        labels_val = labels_data[i][0]
+
+        if (outputs_val > base) : pre_state = 1
+        elif (round(outputs_val,2) == round(base,2)) : pre_state = 0
+        else : pre_state = -1
+
+        if (labels_val > base) : state = 1
+        elif (round(labels_val,4) == round(base,4)) : state = 0
+        else : state = -1
+        if (state == pre_state): correct += 1
+
     denorm_pred = denormalize(df, outputs_data)
     denorm_test = denormalize(df, labels_data)
-    # print('pred: \n',denorm_pred,'\n\n real: \n',denorm_test,'\n\n')
-    # correct += (outputs == labels).sum().item()
+    
     err = 0
     for i in range(len(denorm_pred)):
         err += denorm_pred[i] - denorm_test[i]
     total_diff += err
 
     total += labels.size(0)
-    # print('size = ',labels.size(0),'\n\n total =',total, '\n\n')
 
-print ('error rate = ', total_diff/total)
-# print('Accuracy of the network on the ',total, ' test examples: %d %%' % (
-#     100 * correct / total))
+print ('error rate = ', (total_diff/total)[0])
+print('correct change rate on the ',total, ' test examples: %.2f' % (correct / total))
 
 
 print('end')
