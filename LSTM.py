@@ -7,17 +7,7 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pandas as pd
-from sklearn import preprocessing
-
-def denormalize(df, norm_value):
-    original_value = df['收盤價(元)'].values.reshape(-1,1)
-    min_max_scaler = preprocessing.MinMaxScaler()
-    min_max_scaler.fit_transform(original_value)
-    denorm =[]
-    for i in norm_value:
-        i = i.reshape(-1,1)
-        denorm.append(min_max_scaler.inverse_transform(i).reshape(-1))
-    return denorm
+from data_loader import denormalize
 
 
 class Sequence(nn.Module):
@@ -66,7 +56,7 @@ if __name__ == '__main__':
     # use LBFGS as optimizer since we can load the whole data to train
     optimizer = optim.LBFGS(seq.parameters(), lr=0.8)
     #begin to train
-    for i in range(20):
+    for i in range(15):
         print('STEP: ', i)
         def closure():
             optimizer.zero_grad()

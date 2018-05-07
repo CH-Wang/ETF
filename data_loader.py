@@ -7,11 +7,21 @@ def data_rename(df):
     df.columns =['code','date','abbr','open','high','low','close','amount']
     return df
 
-
 def data_normalizer(df):
     min_max_scaler = preprocessing.MinMaxScaler()
     df['close'] = min_max_scaler.fit_transform(df.close.values.reshape(-1,1))
     return df
+
+def denormalize(df, norm_value):
+    original_value = df['收盤價(元)'].values.reshape(-1,1)
+    min_max_scaler = preprocessing.MinMaxScaler()
+    min_max_scaler.fit_transform(original_value)
+    denorm =[]
+    for i in norm_value:
+        i = i.reshape(-1,1)
+        denorm.append(min_max_scaler.inverse_transform(i).reshape(-1))
+    return denorm
+
 
 def data_slicer(df):
     df = df.drop(['date','code','abbr','open','high','low'], axis=1)
