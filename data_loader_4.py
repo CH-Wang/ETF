@@ -13,6 +13,12 @@ def data_normalizer(df):
     df['close'] = min_max_scaler.fit_transform(df.close.values.reshape(-1,1))
     return df
 
+# def data_normalizer(data_list):
+#     base = data_list[0]
+#     data_list = [round((i-base)/5, 5)  for i in data_list]
+#     return data_list 
+
+
 def data_slicer(df):
     df = df.drop(['date','code','abbr','open','high','low'], axis=1)
     return df
@@ -25,6 +31,7 @@ def data_merger(df,new_df):
             for i in range(20):
                 next_row = df.iloc[index+i]
                 data.append(next_row['close'])
+            # data = data_normalizer(data)
             new_df.loc[new_loc] = data
             new_loc += 1
             data.clear()

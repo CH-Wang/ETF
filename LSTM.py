@@ -7,6 +7,18 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import pandas as pd
+from sklearn import preprocessing
+
+def denormalize(df, norm_value):
+    original_value = df['收盤價(元)'].values.reshape(-1,1)
+    min_max_scaler = preprocessing.MinMaxScaler()
+    min_max_scaler.fit_transform(original_value)
+    denorm =[]
+    for i in norm_value:
+        i = i.reshape(-1,1)
+        denorm.append(min_max_scaler.inverse_transform(i).reshape(-1))
+    return denorm
+
 
 class Sequence(nn.Module):
     def __init__(self):
@@ -54,7 +66,7 @@ if __name__ == '__main__':
     # use LBFGS as optimizer since we can load the whole data to train
     optimizer = optim.LBFGS(seq.parameters(), lr=0.8)
     #begin to train
-    for i in range(10):
+    for i in range(20):
         print('STEP: ', i)
         def closure():
             optimizer.zero_grad()
@@ -73,18 +85,34 @@ if __name__ == '__main__':
             # print('future:', test_target)
             # print('test loss:', loss.item())
             y = pred.detach().numpy()
+
+        df = pd.read_csv('../data/TBrain_Round2_DataSet_20180331/tetfp.csv',encoding = 'Big5')
+        df = pd.DataFrame(df) 
+        denorm_pred = denormalize(df, y)
+        denorm_ytest = denormalize(df, test_target)
+
+        # print(denorm_pred,'\n',denorm_ytest,'\n')
+
         # draw the result
         plt.figure(figsize=(30,10))
-        plt.title('Predict future values for time sequences\n(Dashlines are predicted values)', fontsize=30)
+        plt.title('Predict future values for time sequences\n(red: pred, green: real)', fontsize=30)
         plt.xlabel('x', fontsize=20)
         plt.ylabel('y', fontsize=20)
         plt.xticks(fontsize=20)
         plt.yticks(fontsize=20)
+
+        # print('input size : ', input.size(),'\n')
+        # print('y[:input.size(1)] : ' ,y[:input.size(1)],'\n')
+        # print('y : ', y)
+        # print('test_target : ', test_target)
+        # test_data = test_target.numpy()
+
         def draw(yi, color):
             plt.plot(np.arange(input.size(1)), yi[:input.size(1)], color, linewidth = 2.0)
-            plt.plot(np.arange(input.size(1), input.size(1) + future), yi[input.size(1):], color + ':', linewidth = 2.0)
-        draw(y[0], 'r')
-        draw(y[1], 'g')
-        draw(y[2], 'b')
-        plt.savefig('predict%d.pdf'%i)
+            # plt.plot(np.arange(input.size(1), input.size(1) + future), yi[input.size(1):], color + ':', linewidth = 2.0)
+        draw(denorm_pred[0], 'r')
+        draw(denorm_ytest[0], 'g')
+        # draw(y[2], 'b')
+        # plt.show()
+        plt.savefig('./plot/predict%d.pdf'%i)
         plt.close()
