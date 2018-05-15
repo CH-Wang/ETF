@@ -68,10 +68,11 @@ if __name__ == '__main__':
         optimizer.step(closure)
         # begin to predict, no need to track gradient here
         with torch.no_grad():
-            future = 1
+            future = 5
             pred = seq(test_input, future=future)
             loss = criterion(pred[:, :-future], test_target)
-            # print('predict:',pred[:, :-future])
+            # print('pred[:, :-future]',pred[:, :-future])
+            # print('pred[:, :]:',pred[:, :])
             # print('future:', test_target)
             # print('test loss:', loss.item())
             y = pred.detach().numpy()
@@ -81,7 +82,6 @@ if __name__ == '__main__':
         denorm_pred = denormalize(df, y)
         denorm_ytest = denormalize(df, test_target)
 
-        # print(denorm_pred,'\n',denorm_ytest,'\n')
 
         # draw the result
         plt.figure(figsize=(30,10))
@@ -92,16 +92,21 @@ if __name__ == '__main__':
         plt.yticks(fontsize=20)
 
         # print('input size : ', input.size(),'\n')
-        # print('y[:input.size(1)] : ' ,y[:input.size(1)],'\n')
+        # print('y[:input.size(1)] : ' ,y[0][:input.size(1)],'\n')
+        # print('y[input.size(1):] : ', y[0][input.size(1):],'\n')
         # print('y : ', y)
-        # print('test_target : ', test_target)
-        # test_data = test_target.numpy()
+        # print('test_target : ', test_target, '\n')
 
-        def draw(yi, color):
+        test_data = test_target.numpy()
+
+        def draw_predict(yi, color):
+            plt.plot(np.arange(input.size(1)), yi[:input.size(1)], color, linewidth = 2.0)
+            plt.plot(np.arange(input.size(1), input.size(1) + future), yi[input.size(1):], color + ':', linewidth = 2.0)
+        def draw_test(yi, color):
             plt.plot(np.arange(input.size(1)), yi[:input.size(1)], color, linewidth = 2.0)
             # plt.plot(np.arange(input.size(1), input.size(1) + future), yi[input.size(1):], color + ':', linewidth = 2.0)
-        draw(denorm_pred[0], 'r')
-        draw(denorm_ytest[0], 'g')
+        draw_predict(denorm_pred[0], 'r')
+        draw_test(denorm_ytest[0], 'g')
         # draw(y[2], 'b')
         # plt.show()
         plt.savefig('./plot/predict%d.pdf'%i)
