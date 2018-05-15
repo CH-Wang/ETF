@@ -47,8 +47,8 @@ if __name__ == '__main__':
     test_df = pd.read_csv('../data/test.csv', sep=',',header=None)
     input = torch.from_numpy(train_df.iloc[1:,1:-1].values)
     target = torch.from_numpy(train_df.iloc[1:,2:].values)
-    test_input = torch.from_numpy(test_df.iloc[1:4,1:-1].values)
-    test_target = torch.from_numpy(test_df.iloc[1:4,2:].values)
+    test_input = torch.from_numpy(test_df.iloc[1:,1:-1].values)
+    test_target = torch.from_numpy(test_df.iloc[1:,2:].values)
     # build the model
     seq = Sequence()
     seq.double()
@@ -71,6 +71,7 @@ if __name__ == '__main__':
             future = 5
             pred = seq(test_input, future=future)
             loss = criterion(pred[:, :-future], test_target)
+            print('\n\nloss of test targets:', loss.item())
             # print('pred[:, :-future]',pred[:, :-future])
             # print('pred[:, :]:',pred[:, :])
             # print('future:', test_target)
