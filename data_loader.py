@@ -56,9 +56,10 @@ df = pd.DataFrame(df)
 df = data_rename(df)
 
 # find etf_0050
-df_0050 = df[df.code == 50]
+df_0050 = df[df.code == 50].reset_index(drop=True)
 df_0050 = data_slicer(df_0050)
 df_0050 = data_normalizer(df_0050)
+# print(df_0050 .to_string())
 
 # reshape the data
 new_df_0050 = pd.DataFrame(columns=[str(i) for i in range(20)])
