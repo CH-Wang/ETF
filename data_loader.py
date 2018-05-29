@@ -101,8 +101,8 @@ new_df_0050 = data_merger(df_0050,new_df_0050)
 
 
 # split the data
-train_df = pd.DataFrame(columns=[str(i) for i in range(20)])
-test_df = pd.DataFrame(columns=[str(i) for i in range(20)])
+train_df = pd.DataFrame()
+test_df = pd.DataFrame()
 
 train_df, test_df = data_finalizer(new_df_0050 , train_df, test_df)
 train_df.to_csv('../data/train.csv')

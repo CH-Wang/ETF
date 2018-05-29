@@ -1,12 +1,10 @@
 import torch
 import torchvision
-import torchvision.transforms as transforms
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 from torch.utils.data.dataset import Dataset
 from torch.autograd import Variable
-
 import pandas as pd
 import numpy as np
 from data_loader import score_cal
@@ -46,18 +44,10 @@ class ETFDataset(Dataset):
         return data, label
 
 
-transformations = transforms.Compose([transforms.ToTensor()])
-
 trainset = ETFDataset('../data/train.csv')
-
-
 trainloader = torch.utils.data.DataLoader(trainset, batch_size=4,shuffle=True, num_workers=0)
-
 testset = ETFDataset('../data/test.csv')
-
-
 testloader = torch.utils.data.DataLoader(testset, batch_size=4,shuffle=False, num_workers=0)
-
 
 net = Net()
 
@@ -70,7 +60,6 @@ for epoch in range(10):  # loop over the dataset multiple times
     for i, data in enumerate(trainloader, 0):
         # get the inputs
         inputs, labels = data
-
         # wrap them in Variable
         inputs, labels = Variable(inputs), Variable(labels)
 
@@ -93,13 +82,11 @@ for epoch in range(10):  # loop over the dataset multiple times
 
 print('Finished Training')
 
-torch.save(net.state_dict(), './model/model')
+torch.save(net.state_dict(), './model/nn_model')
 
 
 score = 0
 total = 0
-df = pd.read_csv('../data/TBrain_Round2_DataSet_20180331/tetfp.csv',encoding = 'Big5')
-df = pd.DataFrame(df)
 for data in testloader:
     inputs, labels = data
     outputs = net(Variable(inputs))
