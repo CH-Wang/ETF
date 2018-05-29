@@ -54,22 +54,15 @@ net = Net()
 criterion = nn.MSELoss()
 optimizer = optim.SGD(net.parameters(), lr=0.2)
 
-for epoch in range(10):  # loop over the dataset multiple times
+for epoch in range(10):
 
     running_loss = 0.0
     for i, data in enumerate(trainloader, 0):
-        # get the inputs
         inputs, labels = data
-        # wrap them in Variable
         inputs, labels = Variable(inputs), Variable(labels)
-
-        # zero the parameter gradients
         optimizer.zero_grad()
-
-        # forward + backward + optimize
         outputs = net(inputs)
         loss = criterion(outputs, labels)
-        # print(outputs, labels, loss)
         loss.backward()
         optimizer.step()
 
