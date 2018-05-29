@@ -1,9 +1,19 @@
 import numpy as np 
-from sklearn.multioutput import MultiOutputRegressor
-from sklearn.svm import SVR
 import pandas as pd
 from data_loader import score_cal
 
+## Persistence Model
+class PersistenceModel():
+
+    def fit(self, data, target):
+        return True
+
+    def predict(self, data):
+        output = []
+        for i in data:
+            output.append([i[-1] for j in range(5)])
+        return output
+    
 if __name__ == '__main__':
     train_df = pd.read_csv('../data/train.csv', sep=',',header=None)
     test_df = pd.read_csv('../data/test.csv', sep=',',header=None)
@@ -15,10 +25,11 @@ if __name__ == '__main__':
     test_target = test_df.iloc[1:,-5:].values
 
 
-    MOR = MultiOutputRegressor(SVR(kernel='rbf', C=1e3, gamma=0.1))
-    MOR.fit(train_input,train_target)
+    baseline = PersistenceModel()
+    baseline.fit(train_input,train_target)
 
-    test_output = MOR.predict(test_input)
+    test_output = baseline.predict(test_input)
+
 
     score = score_cal(test_input, test_target, test_output)
 

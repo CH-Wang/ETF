@@ -67,7 +67,6 @@ class ETFtestset(Dataset):
 
 if __name__ == '__main__':
 
-
     trainset = ETFDataset('../data/train.csv')
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=4,shuffle=True, num_workers=0)
 

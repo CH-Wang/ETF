@@ -85,28 +85,30 @@ def score_cal(norm_input_list, norm_target_list, norm_output_list):
     return sum(avg_score)
 
 
-df = pd.read_csv('../data/TBrain_Round2_DataSet_20180331/tetfp.csv',encoding = 'Big5')
-df = pd.DataFrame(df)  
-df = data_rename(df)
+if __name__ == '__main__':
 
-# find etf_0050
-df_0050 = df[df.code == 50].reset_index(drop=True)
-df_0050 = data_slicer(df_0050)
-df_0050 = data_normalizer(df_0050)
-# print(df_0050 .to_string())
+    df = pd.read_csv('../data/TBrain_Round2_DataSet_20180331/tetfp.csv',encoding = 'Big5')
+    df = pd.DataFrame(df)  
+    df = data_rename(df)
 
-# reshape the data
-new_df_0050 = pd.DataFrame(columns=[str(i) for i in range(20)])
-new_df_0050 = data_merger(df_0050,new_df_0050)
+    # find etf_0050
+    df_0050 = df[df.code == 50].reset_index(drop=True)
+    df_0050 = data_slicer(df_0050)
+    df_0050 = data_normalizer(df_0050)
+    # print(df_0050 .to_string())
+
+    # reshape the data
+    new_df_0050 = pd.DataFrame(columns=[str(i) for i in range(20)])
+    new_df_0050 = data_merger(df_0050,new_df_0050)
 
 
-# split the data
-train_df = pd.DataFrame()
-test_df = pd.DataFrame()
+    # split the data
+    train_df = pd.DataFrame()
+    test_df = pd.DataFrame()
 
-train_df, test_df = data_finalizer(new_df_0050 , train_df, test_df)
-train_df.to_csv('../data/train.csv')
-test_df.to_csv('../data/test.csv')
-# print(train_df)
-# print(test_df)
+    train_df, test_df = data_finalizer(new_df_0050 , train_df, test_df)
+    train_df.to_csv('../data/train.csv')
+    test_df.to_csv('../data/test.csv')
+    # print(train_df)
+    # print(test_df)
 
