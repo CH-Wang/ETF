@@ -9,18 +9,18 @@ from torch.autograd import Variable
 
 import pandas as pd
 import numpy as np
-from data_loader import denormalize
+from data_loader import score_cal
 
 
 
 class Net(nn.Module):
     def __init__(self):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(19, 50, bias=True)
+        self.fc1 = nn.Linear(15, 50, bias=True)
         self.fc2 = nn.Linear(50, 50, bias=True)
         self.fc3 = nn.Linear(50, 50, bias=True)
         self.fc4 = nn.Linear(50, 10, bias=True)
-        self.fc5 = nn.Linear(10, 1, bias=True)
+        self.fc5 = nn.Linear(10, 5, bias=True)
 
     def forward(self, x):
         x = F.relu(self.fc1(x))
@@ -39,8 +39,8 @@ class ETFDataset(Dataset):
         return len(self.ETF)
 
     def __getitem__(self, index):
-        data = self.ETF.iloc[index, 1:20].tolist()
-        label = self.ETF.iloc[index, 20:21].tolist()
+        data = self.ETF.iloc[index, 1:16].tolist()
+        label = self.ETF.iloc[index, 16:].tolist()
         data = torch.Tensor(data)
         label = torch.Tensor(label)
         return data, label
@@ -96,50 +96,22 @@ print('Finished Training')
 torch.save(net.state_dict(), './model/model')
 
 
-diff_rate = 0
-total_diff = 0
+score = 0
 total = 0
-correct = 0
 df = pd.read_csv('../data/TBrain_Round2_DataSet_20180331/tetfp.csv',encoding = 'Big5')
 df = pd.DataFrame(df)
 for data in testloader:
     inputs, labels = data
     outputs = net(Variable(inputs))
 
-    # correct += (outputs == labels).sum().item()
-
     inputs_data = inputs.detach().numpy()
     outputs_data = outputs.detach().numpy()
     labels_data = labels.detach().numpy()
-
     
-    for i in range(len(outputs_data)):
-        base = inputs_data[i][-1]
-        outputs_val = outputs_data[i][0]
-        labels_val = labels_data[i][0]
+    score += score_cal(inputs_data, labels_data, outputs_data)
+    total +=1
 
-        if (outputs_val > base) : pre_state = 1
-        elif (round(outputs_val,2) == round(base,2)) : pre_state = 0
-        else : pre_state = -1
-
-        if (labels_val > base) : state = 1
-        elif (round(labels_val,4) == round(base,4)) : state = 0
-        else : state = -1
-        if (state == pre_state): correct += 1
-
-    denorm_pred = denormalize(df, outputs_data)
-    denorm_test = denormalize(df, labels_data)
-    
-    err = 0
-    for i in range(len(denorm_pred)):
-        err += denorm_pred[i] - denorm_test[i]
-    total_diff += err
-
-    total += labels.size(0)
-
-print ('error rate = ', (total_diff/total)[0])
-print('correct change rate on the ',total, ' test examples: %.2f' % (correct / total))
-
+print ('avg score = ', (score/total))
 
 print('end')
 

@@ -51,6 +51,40 @@ def data_finalizer(df, train_df, test_df):
     test_df = df.loc[df.index >= cut_line].reset_index(drop=True)
     return train_df, test_df
 
+def score_cal(norm_input_list, norm_target_list, norm_output_list):
+
+    df = pd.read_csv('../data/TBrain_Round2_DataSet_20180331/tetfp.csv',encoding = 'Big5')
+    df = pd.DataFrame(df) 
+
+    avg_score = 0
+    for j, norm_input in enumerate(norm_input_list):
+        norm_target = norm_target_list[j]
+        norm_output = norm_output_list[j]
+        denorm_input = denormalize(df, norm_input)
+        denorm_target = denormalize(df, norm_target)
+        denorm_output = denormalize(df, norm_output)
+
+        score_list = []
+        last_price = denorm_input[-1].round(2)
+
+        for i in range(5):
+            score = 0
+            target_price = denorm_target[i].round(2)
+            ouput_price = denorm_output[i].round(2)
+            diff_target = target_price - last_price
+            diff_ouput = ouput_price - last_price
+            last_price = target_price
+            if (diff_target*diff_ouput > 0 or diff_target == diff_ouput):
+                score += 0.5
+            score += (target_price - abs(target_price - ouput_price))/target_price*0.5
+            score_list.append(score)
+        weighted_score = map(lambda x,y:x*y,score_list,[0.1,0.15,0.2,0.25,0.3])
+        avg_score += sum(weighted_score)
+
+    avg_score = avg_score/ len(norm_input_list)
+    return sum(avg_score)
+
+
 df = pd.read_csv('../data/TBrain_Round2_DataSet_20180331/tetfp.csv',encoding = 'Big5')
 df = pd.DataFrame(df)  
 df = data_rename(df)
