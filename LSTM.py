@@ -65,62 +65,70 @@ class ETFtestset(Dataset):
         label = torch.Tensor(label).double()
         return data, label
 
-if __name__ == '__main__':
+class LSTM():
+    def __init__(self):
+        self.model = Sequence().double()
 
-    trainset = ETFDataset('../data/train.csv')
-    trainloader = torch.utils.data.DataLoader(trainset, batch_size=4,shuffle=True, num_workers=0)
+    def fit(self, trainpath, n_epoch = 15, lr = 0.2, batch_size=4):
+        
+        trainset = ETFDataset(trainpath)
+        trainloader = torch.utils.data.DataLoader(trainset, batch_size,shuffle=True, num_workers=0)
+        
+        np.random.seed(0)
+        torch.manual_seed(0)
+        criterion = nn.MSELoss()
+        optimizer = optim.SGD(self.model.parameters(), lr)
+        
+        for epoch in range(n_epoch): 
+            running_loss = 0.0
+            for i, data in enumerate(trainloader, 0):
+                inputs, labels = data
+                inputs, labels = Variable(inputs), Variable(labels)
+                optimizer.zero_grad()
+                outputs = self.model(inputs)
+                loss = criterion(outputs, labels)
+                loss.backward()
+                optimizer.step()
 
-    testset = ETFtestset('../data/test.csv')
-    testloader = torch.utils.data.DataLoader(testset, batch_size=4,shuffle=False, num_workers=0)
+                # print statistics
+                running_loss += loss.data
+                if i % 10 == 9:    # print every 10 mini-batches
+                    print('[%d, %5d] loss: %.5f' %
+                        (epoch + 1, i + 1, running_loss / 10))
+                    running_loss = 0.0
 
-    np.random.seed(0)
-    torch.manual_seed(0)
+        print('Finished Training')
 
-    net = Sequence()
-    net.double()
-    criterion = nn.MSELoss()
-    optimizer = optim.SGD(net.parameters(), lr=0.2)
+    def predict(self, test_input, future = 0):
 
-    for epoch in range(15): 
+        return self.model(Variable(test_input),future).detach().numpy()
 
-        running_loss = 0.0
-        for i, data in enumerate(trainloader, 0):
+    def save(self):
+
+        torch.save(self.model.state_dict(), './model/LSTM_model')
+
+    def load(self):
+
+        self.model.load_state_dict(torch.load('./model/LSTM_model'))
+    
+    def score(self, testpath, batch_size=4):
+
+        testset = ETFtestset(testpath)
+        testloader = torch.utils.data.DataLoader(testset, batch_size,shuffle=False, num_workers=0)
+        score = 0
+        total = 0
+        for data in testloader:
             inputs, labels = data
-            inputs, labels = Variable(inputs), Variable(labels)
-            optimizer.zero_grad()
-            outputs = net(inputs)
-            loss = criterion(outputs, labels)
-            loss.backward()
-            optimizer.step()
+            outputs = self.model(Variable(inputs),future = 4)
 
-            # print statistics
-            running_loss += loss.data
-            if i % 10 == 9:    # print every 10 mini-batches
-                print('[%d, %5d] loss: %.5f' %
-                    (epoch + 1, i + 1, running_loss / 10))
-                running_loss = 0.0
+            inputs_data = inputs.detach().numpy()
+            outputs_data = outputs.detach().numpy()[:,-5:]
+            labels_data = labels.detach().numpy()
 
-    print('Finished Training')
+            score += score_cal(inputs_data, labels_data, outputs_data)
+            total +=1
+        return score/total    
 
-    torch.save(net.state_dict(), './model/LSTM_model')
-
-
-    score = 0
-    total = 0
-    for data in testloader:
-        inputs, labels = data
-        outputs = net(Variable(inputs),future = 4)
-
-        inputs_data = inputs.detach().numpy()
-        outputs_data = outputs.detach().numpy()[:,-5:]
-        labels_data = labels.detach().numpy()
-
-        score += score_cal(inputs_data, labels_data, outputs_data)
-        total +=1
-
-    print ('avg score = ', (score/total))
-
-    print('end')
 
 
 
