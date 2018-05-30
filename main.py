@@ -46,7 +46,7 @@ print ('ann score:', ann_score)
 
 ## LSTM
 lstm = LSTM()
-# lstm.fit('../data/train.csv', n_epoch=20)
+# lstm.fit('../data/train.csv', n_epoch=50)
 # lstm.save()
 lstm.load()
 lstm_score = lstm.score('../data/test.csv')

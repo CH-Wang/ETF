@@ -5,6 +5,10 @@ from sklearn import preprocessing
 def data_rename(df):
     name_list = ['代碼', '日期', '中文簡稱', '開盤價(元)', '最高價(元)', '最低價(元)', '收盤價(元)', '成交張數(張)']
     df.columns =['code','date','abbr','open','high','low','close','amount']
+    
+    for column in df.columns[3:]:
+        df[column] = df[column].apply(lambda x: float(str(x).replace(',','')))
+
     return df
 
 def data_normalizer(df):
@@ -53,7 +57,7 @@ def data_finalizer(df, train_df, test_df):
 
 def score_cal(norm_input_list, norm_target_list, norm_output_list):
 
-    df = pd.read_csv('../data/TBrain_Round2_DataSet_20180331/tetfp.csv',encoding = 'Big5')
+    df = pd.read_csv('../data/TBrain_Round2_DataSet_20180331/tetfp.csv',encoding = 'cp950')
     df = pd.DataFrame(df) 
 
     avg_score = 0
@@ -89,10 +93,13 @@ def score_cal(norm_input_list, norm_target_list, norm_output_list):
 
 if __name__ == '__main__':
 
-    df = pd.read_csv('../data/TBrain_Round2_DataSet_20180331/tetfp.csv',encoding = 'Big5')
+    df = pd.read_csv('../data/TBrain_Round2_DataSet_20180331/tetfp.csv',encoding = 'cp950')
     df = pd.DataFrame(df)  
     df = data_rename(df)
+    # print(df)
+    # print (df.dtypes)
 
+    ETFcode = [50,51,52,53,54,55,56,57,58,59,6201,6203,6204,6208,690,692,701,713]
     # find etf_0050
     df_0050 = df[df.code == 50].reset_index(drop=True)
     df_0050 = data_slicer(df_0050)
