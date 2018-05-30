@@ -11,16 +11,16 @@ from data_loader import score_cal
 class Sequence(nn.Module):
     def __init__(self):
         super(Sequence, self).__init__()
-        self.lstm1 = nn.LSTMCell(1, 100)
-        self.lstm2 = nn.LSTMCell(100, 100)
-        self.linear = nn.Linear(100, 1)
+        self.lstm1 = nn.LSTMCell(1, 60)
+        self.lstm2 = nn.LSTMCell(60, 60)
+        self.linear = nn.Linear(60, 1)
 
     def forward(self, input, future = 0):
         outputs = []
-        h_t = torch.zeros(input.size(0), 100, dtype=torch.double)
-        c_t = torch.zeros(input.size(0), 100, dtype=torch.double)
-        h_t2 = torch.zeros(input.size(0), 100, dtype=torch.double)
-        c_t2 = torch.zeros(input.size(0), 100, dtype=torch.double)
+        h_t = torch.zeros(input.size(0), 60, dtype=torch.double)
+        c_t = torch.zeros(input.size(0), 60, dtype=torch.double)
+        h_t2 = torch.zeros(input.size(0), 60, dtype=torch.double)
+        c_t2 = torch.zeros(input.size(0), 60, dtype=torch.double)
 
         for i, input_t in enumerate(input.chunk(input.size(1), dim=1)):
             h_t, c_t = self.lstm1(input_t, (h_t, c_t))
