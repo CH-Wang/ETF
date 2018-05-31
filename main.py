@@ -45,10 +45,10 @@ if __name__ == '__main__':
         baseline_score = scoreCal(test_input, test_target, test_output)
         print('baseline1 score:', baseline_score)
         
-        # ## predict
-        # predict = np.array(baseline.predict([last_data]))
-        # predict = codeDenormalize(predict, code=code)    
-        # print('prediction:', predict, '\n\n')
+        ## predict
+        baseline_predict = np.array(baseline.predict([last_data]))
+        baseline_predict = codeDenormalize(baseline_predict, code=code)    
+        print('baseline prediction:', baseline_predict, '\n')
 
         ## Baseline2
         baseline_score = scoreCal(test_input, test_target, test_output, variation=[1,1,1,1,1])
@@ -68,13 +68,14 @@ if __name__ == '__main__':
 
         ## score
         svm_score = scoreCal(test_input, test_target, test_output)
+        svm_abs_score = scoreCal(test_input, test_target, test_output, count_variation=False)
         print('svm score:', svm_score)
-        print('svm abs score:', scoreCal(test_input, test_target, test_output, count_variation=False))       
+        print('svm abs score:', svm_abs_score)       
 
-        # ## predict
-        # predict = svm.predict([last_data[-15:]])
-        # predict = codeDenormalize(predict, code=code)    
-        # print('prediction:', predict, '\n\n')
+        ## predict
+        svm_predict = svm.predict([last_data[-15:]])
+        svm_predict = codeDenormalize(svm_predict, code=code)    
+        print('svm prediction:', svm_predict, '\n')
 
         ## ANN
         ann = ANN()
@@ -90,13 +91,14 @@ if __name__ == '__main__':
 
         ## score
         ann_score = scoreCal(test_data,test_target,test_output)
-        print ('ann score:', ann_score)
-        print('ann abs score:', scoreCal(test_data,test_target,test_output, count_variation=False))
+        ann_abs_score = scoreCal(test_data,test_target,test_output, count_variation=False)
+        print('ann score:', ann_score)
+        print('ann abs score:',ann_abs_score)
         
-        # ## predict
-        # predict = ann.predict(last_data[-15:])
-        # predict = codeDenormalize(predict, code=code)        
-        # print('prediction: \n', predict, '\n\n')
+        ## predict
+        ann_predict = ann.predict(last_data[-15:])
+        ann_predict = codeDenormalize(ann_predict, code=code)        
+        print('ann prediction:', ann_predict, '\n')
 
         ## LSTM
         future = 4
@@ -113,10 +115,28 @@ if __name__ == '__main__':
           
         ## score
         lstm_score = scoreCal(test_data,test_target,test_output)
-        print ('lstm score:', lstm_score)
-        print('lstm abs score:', scoreCal(test_data,test_target,test_output, count_variation=False))
+        lstm_abs_score = scoreCal(test_data,test_target,test_output, count_variation=False)
+        print('lstm score:', lstm_score)
+        print('lstm abs score:', lstm_abs_score)
         
-        # ## predict
-        # predict = lstm.predict(last_data, future=4)
-        # predict = codeDenormalize(predict, code=code)    
-        # print('prediction: \n', predict, '\n\n')
+        ## predict
+        lstm_predict = lstm.predict(last_data, future=4)
+        lstm_predict = codeDenormalize(lstm_predict, code=code)
+        lstm_predict = [lstm_predict[0][-5:]]   
+        print('lstm prediction:', lstm_predict, '\n')
+
+        # ## save results
+        # result_file = open('result/result.txt', 'w')
+        # result_file.write('code = '+str(code)+'\n') 
+        # result_file.write('baseline1 score:'+str(baseline_score)+'\n')
+        # result_file.write('baseline2 score:'+str(baseline_score)+'\n')
+        # result_file.write('svm score:'+str(svm_score)+'\n')
+        # result_file.write('svm abs score:'+str(svm_abs_score)+'\n')
+        # result_file.write('ann score:'+str(ann_score)+'\n')
+        # result_file.write('ann abs score:'+str(ann_abs_score)+'\n')
+        # result_file.write('lstm score:'+str(lstm_score)+'\n')
+        # result_file.write('lstm abs score:'+str(lstm_abs_score)+'\n')
+        # result_file.write('baseline prediction:'+str(baseline_predict)+'\n')
+        # result_file.write('svm prediction:'+str(svm_predict)+'\n')
+        # result_file.write('ann prediction:'+str(ann_predict)+'\n')
+        # result_file.write('lstm prediction:'+str(lstm_predict)+'\n')

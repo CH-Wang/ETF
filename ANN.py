@@ -102,20 +102,3 @@ class ANN():
             output_list.append(outputs.detach().numpy())
         return output_list
 
-    # def score(self, testpath, batch_size=4, count_variation=True):
-
-    #     testset = ETFDataset(testpath)
-    #     testloader = torch.utils.data.DataLoader(testset, batch_size,shuffle=False, num_workers=0)
-    #     score = 0
-    #     total = 0
-    #     for data in testloader:
-    #         inputs, labels = data
-    #         outputs = self.model(Variable(inputs))
-
-    #         inputs_data = inputs.detach().numpy()
-    #         outputs_data = outputs.detach().numpy()[:,-5:]
-    #         labels_data = labels.detach().numpy()
-
-    #         score += scoreCal(inputs_data, labels_data, outputs_data, count_variation=count_variation)
-    #         total +=1
-    #     return score/total    
