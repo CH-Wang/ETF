@@ -52,7 +52,7 @@ def split(df):
     df = df.dropna(axis=0, how='any')
     last_row = df.iloc[-1]
     df = df[:-1]
-    # df = df.sample(frac = 1).reset_index(drop=True)
+    df = df.sample(frac = 1).reset_index(drop=True)
     max_index = df.index.max()
     cut_line = int(0.9*max_index)
     trainDf = df.loc[df.index < cut_line]
@@ -130,7 +130,11 @@ if __name__ == '__main__':
 
         ## split the data
         trainDf, testDf = split(codeDf)
-        trainDf.to_csv('../data/train.csv')
-        testDf.to_csv('../data/test.csv')
+
+        trainPath = '../data/train'+str(code)+'.csv'
+        testPath = '../data/test'+str(code)+'.csv'
+
+        trainDf.to_csv(trainPath)
+        testDf.to_csv(testPath)
 
 
