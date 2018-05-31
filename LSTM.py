@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from torch.autograd import Variable
 from torch.utils.data.dataset import Dataset
-from data_loader import score_cal
+from dataLoader import scoreCal
 
 
 class Sequence(nn.Module):
@@ -125,7 +125,7 @@ class LSTM():
             outputs_data = outputs.detach().numpy()[:,-5:]
             labels_data = labels.detach().numpy()
 
-            score += score_cal(inputs_data, labels_data, outputs_data)
+            score += scoreCal(inputs_data, labels_data, outputs_data)
             total +=1
         return score/total    
 

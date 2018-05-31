@@ -2,8 +2,8 @@ import pandas as pd
 import numpy as np 
 from sklearn import preprocessing
 
-def data_rename(df):
-    name_list = ['代碼', '日期', '中文簡稱', '開盤價(元)', '最高價(元)', '最低價(元)', '收盤價(元)', '成交張數(張)']
+def rename(df):
+#    name_list = ['代碼', '日期', '中文簡稱', '開盤價(元)', '最高價(元)', '最低價(元)', '收盤價(元)', '成交張數(張)']
     df.columns =['code','date','abbr','open','high','low','close','amount']
     
     for column in df.columns[3:]:
@@ -11,13 +11,14 @@ def data_rename(df):
 
     return df
 
-def data_normalizer(df):
+def normalize(df):
     min_max_scaler = preprocessing.MinMaxScaler()
     df['close'] = min_max_scaler.fit_transform(df.close.values.reshape(-1,1))
     return df
 
 def denormalize(df, norm_value):
-    original_value = df['收盤價(元)'].values.reshape(-1,1)
+    df = rename(df)
+    original_value = df['close'].values.reshape(-1,1)
     min_max_scaler = preprocessing.MinMaxScaler()
     min_max_scaler.fit_transform(original_value)
     denorm =[]
@@ -27,26 +28,27 @@ def denormalize(df, norm_value):
     return denorm
 
 
-def data_slicer(df):
+def dropCol(df):
     df = df.drop(['date','code','abbr','open','high','low'], axis=1)
     return df
 
-def data_merger(df,new_df):
+def concat(df, ndays=20):
+    newDf = pd.DataFrame(columns=[str(i) for i in range(ndays)])
     data = []
     new_loc = 0
     for index, _ in df.iterrows():
-        if index < df.index.max()-18:
-            for i in range(20):
+        if index < df.index.max() - ndays + 1 :
+            for i in range(ndays):
                 next_row = df.iloc[index+i]
                 data.append(next_row['close'])
-            # data = data_normalizer(data)
-            new_df.loc[new_loc] = data
+            newDf.loc[new_loc] = data
             new_loc += 1
             data.clear()
-    return new_df
+    df = newDf
+    return df
 
 
-def data_finalizer(df, train_df, test_df):
+def split(df):
     df = df.dropna(axis=0, how='any')
     df = df.sample(frac = 1).reset_index(drop=True)
     max_index = df.index.max()
@@ -55,7 +57,12 @@ def data_finalizer(df, train_df, test_df):
     test_df = df.loc[df.index >= cut_line].reset_index(drop=True)
     return train_df, test_df
 
-def score_cal(norm_input_list, norm_target_list, norm_output_list):
+def shift(df):
+    df.close = df.close - df.close.shift()
+    return df
+
+
+def scoreCal(norm_input_list, norm_target_list, norm_output_list):
 
     df = pd.read_csv('../data/TBrain_Round2_DataSet_20180331/tetfp.csv',encoding = 'cp950')
     df = pd.DataFrame(df) 
@@ -95,29 +102,27 @@ if __name__ == '__main__':
 
     df = pd.read_csv('../data/TBrain_Round2_DataSet_20180331/tetfp.csv',encoding = 'cp950')
     df = pd.DataFrame(df)  
-    df = data_rename(df)
-    # print(df)
-    # print (df.dtypes)
+    df = rename(df)
 
     ETFcode = [50,51,52,53,54,55,56,57,58,59,6201,6203,6204,6208,690,692,701,713]
-    # find etf_0050
-    df_0050 = df[df.code == 50].reset_index(drop=True)
-    df_0050 = data_slicer(df_0050)
-    df_0050 = data_normalizer(df_0050)
-    # print(df_0050 .to_string())
+    
+    for code in [50]:
 
-    # reshape the data
-    new_df_0050 = pd.DataFrame(columns=[str(i) for i in range(20)])
-    new_df_0050 = data_merger(df_0050,new_df_0050)
+        codeDf = df[df.code == code].reset_index(drop=True)
 
+        # normalize and shift 
+        # codeDf = shift(codeDf)
+        codeDf = codeDf.dropna(axis=0, how='any')
+        codeDf = normalize(codeDf)
+        
+        # concatenate data for 20 days
+        codeDf = concat(codeDf)
+        # print(codeDf.to_string())
 
-    # split the data
-    train_df = pd.DataFrame()
-    test_df = pd.DataFrame()
-
-    train_df, test_df = data_finalizer(new_df_0050 , train_df, test_df)
-    train_df.to_csv('../data/train.csv')
-    test_df.to_csv('../data/test.csv')
-    # print(train_df)
-    # print(test_df)
+        # split the data
+        train_df, test_df = split(codeDf)
+        train_df.to_csv('../data/train.csv')
+        test_df.to_csv('../data/test.csv')
+        # print(train_df)
+        # print(test_df)
 

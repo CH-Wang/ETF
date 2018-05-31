@@ -7,7 +7,7 @@ from torch.utils.data.dataset import Dataset
 from torch.autograd import Variable
 import pandas as pd
 import numpy as np
-from data_loader import score_cal
+from dataLoader import scoreCal
 
 
 
@@ -104,6 +104,6 @@ class ANN():
             outputs_data = outputs.detach().numpy()[:,-5:]
             labels_data = labels.detach().numpy()
 
-            score += score_cal(inputs_data, labels_data, outputs_data)
+            score += scoreCal(inputs_data, labels_data, outputs_data)
             total +=1
         return score/total    
