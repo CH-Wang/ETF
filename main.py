@@ -35,40 +35,46 @@ if __name__ == '__main__':
         baseline = PersistenceModel()
         baseline.fit(train_input,train_target)
         test_output = np.array(baseline.predict(test_input))
+        
         ## denormalize
         test_output = codeDenormalize(test_output, code=code)
         test_data = denorm_test_input
         test_target = denorm_test_target     
+        
         ## score
         baseline_score = scoreCal(test_input, test_target, test_output)
         print('baseline1 score:', baseline_score)
-        ## predict
-        predict = np.array(baseline.predict([last_data]))
-        predict = codeDenormalize(predict, code=code)    
-        print('prediction:', predict, '\n\n')
+        
+        # ## predict
+        # predict = np.array(baseline.predict([last_data]))
+        # predict = codeDenormalize(predict, code=code)    
+        # print('prediction:', predict, '\n\n')
 
         ## Baseline2
         baseline_score = scoreCal(test_input, test_target, test_output, variation=[1,1,1,1,1])
-        print('baseline2 score:', baseline_score, '\n\n')
+        print('baseline2 score:', baseline_score)
 
         ## SVM
         svm = SVM()
-        svm.fit(train_input,train_target)
-        svm.save()
-        # svm.load()
+        # svm.fit(train_input,train_target)
+        # svm.save()
+        svm.load()
         test_output = svm.predict(test_input)
+
         ## denormalize
         test_output = codeDenormalize(test_output, code=code)
         test_data = denorm_test_input
         test_target = denorm_test_target
+
         ## score
         svm_score = scoreCal(test_input, test_target, test_output)
         print('svm score:', svm_score)
         print('svm abs score:', scoreCal(test_input, test_target, test_output, count_variation=False))       
-        ## predict
-        predict = svm.predict([last_data[-15:]])
-        predict = codeDenormalize(predict, code=code)    
-        print('prediction:', predict, '\n\n')
+
+        # ## predict
+        # predict = svm.predict([last_data[-15:]])
+        # predict = codeDenormalize(predict, code=code)    
+        # print('prediction:', predict, '\n\n')
 
         ## ANN
         ann = ANN()
@@ -87,10 +93,10 @@ if __name__ == '__main__':
         print ('ann score:', ann_score)
         print('ann abs score:', scoreCal(test_data,test_target,test_output, count_variation=False))
         
-        ## predict
-        predict = ann.predict(last_data[-15:])
-        predict = codeDenormalize(predict, code=code)        
-        print('prediction: \n', predict, '\n\n')
+        # ## predict
+        # predict = ann.predict(last_data[-15:])
+        # predict = codeDenormalize(predict, code=code)        
+        # print('prediction: \n', predict, '\n\n')
 
         ## LSTM
         future = 4
@@ -101,16 +107,16 @@ if __name__ == '__main__':
         test_output = lstm.predictTestSet(testPath, future=future)
 
         ## denormalize
-        test_outtput = codeDenormalize(test_output[:, (-future-1):], code=code)
+        test_output = codeDenormalize(test_output[:, (-future-1):], code=code)
         test_data = codeDenormalize(test_df.iloc[:,1:(-future-1)].values, code=code)
         test_target = codeDenormalize(test_df.iloc[:,(-future-1):].values, code=code)        
-        
+          
         ## score
         lstm_score = scoreCal(test_data,test_target,test_output)
         print ('lstm score:', lstm_score)
         print('lstm abs score:', scoreCal(test_data,test_target,test_output, count_variation=False))
         
-        ## predict
-        predict = lstm.predict(last_data, future=4)
-        predict = codeDenormalize(predict, code=code)    
-        print('prediction: \n', predict, '\n\n')
+        # ## predict
+        # predict = lstm.predict(last_data, future=4)
+        # predict = codeDenormalize(predict, code=code)    
+        # print('prediction: \n', predict, '\n\n')
