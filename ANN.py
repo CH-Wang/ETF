@@ -82,15 +82,17 @@ class ANN():
 
         return self.model(Variable(test_input)).detach().numpy()
 
-    def save(self):
+    def save(self, code = 50):
+        filename = 'ANN'+ str(code)
+        filepath = './model/' + filename
+        torch.save(self.model.state_dict(), filepath)
 
-        torch.save(self.model.state_dict(), './model/ANN_model')
-
-    def load(self):
-
-        self.model.load_state_dict(torch.load('./model/ANN_model'))
+    def load(self, code = 50):
+        filename = 'ANN'+ str(code)
+        filepath = './model/' + filename
+        self.model.load_state_dict(torch.load(filepath))
     
-    def score(self, testpath, batch_size=4):
+    def score(self, testpath, batch_size=4, count_variation=True):
 
         testset = ETFDataset(testpath)
         testloader = torch.utils.data.DataLoader(testset, batch_size,shuffle=False, num_workers=0)
@@ -104,6 +106,6 @@ class ANN():
             outputs_data = outputs.detach().numpy()[:,-5:]
             labels_data = labels.detach().numpy()
 
-            score += scoreCal(inputs_data, labels_data, outputs_data)
+            score += scoreCal(inputs_data, labels_data, outputs_data, count_variation=count_variation)
             total +=1
         return score/total    

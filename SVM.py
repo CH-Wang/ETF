@@ -14,9 +14,13 @@ class SVM():
     def predict(self, test_input):
         return self.model.predict(test_input)
 
-    def save(self):
-        joblib.dump(self.model, 'model/SVM.pkl')
+    def save(self, code = 50):
+        filename = 'SVM'+ str(code) + '.pkl'
+        filepath = './model/' + filename
+        joblib.dump(self.model, filepath)
 
-    def load(self):
-        self.model = joblib.load('model/SVM.pkl')
+    def load(self, code = 50):
+        filename = 'SVM'+ str(code) + '.pkl'
+        filepath = './model/' + filename
+        self.model = joblib.load(filepath)
 

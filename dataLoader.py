@@ -3,7 +3,7 @@ import numpy as np
 from sklearn import preprocessing
 
 def rename(df):
-#    name_list = ['代碼', '日期', '中文簡稱', '開盤價(元)', '最高價(元)', '最低價(元)', '收盤價(元)', '成交張數(張)']
+##    name_list = ['代碼', '日期', '中文簡稱', '開盤價(元)', '最高價(元)', '最低價(元)', '收盤價(元)', '成交張數(張)']
     df.columns =['code','date','abbr','open','high','low','close','amount']
     
     for column in df.columns[3:]:
@@ -37,7 +37,7 @@ def concat(df, ndays=20):
     data = []
     new_loc = 0
     for index, _ in df.iterrows():
-        if index < df.index.max() - ndays + 1 :
+        if index < df.index.max() - ndays + 2 :
             for i in range(ndays):
                 next_row = df.iloc[index+i]
                 data.append(next_row['close'])
@@ -50,19 +50,21 @@ def concat(df, ndays=20):
 
 def split(df):
     df = df.dropna(axis=0, how='any')
-    df = df.sample(frac = 1).reset_index(drop=True)
+    last_row = df.iloc[-1]
+    df = df[:-1]
+    # df = df.sample(frac = 1).reset_index(drop=True)
     max_index = df.index.max()
     cut_line = int(0.9*max_index)
-    train_df = df.loc[df.index < cut_line]
-    test_df = df.loc[df.index >= cut_line].reset_index(drop=True)
-    return train_df, test_df
+    trainDf = df.loc[df.index < cut_line]
+    testDf = df.loc[df.index >= cut_line].reset_index(drop=True)
+    testDf = testDf.append(last_row, ignore_index=True)
+    return trainDf, testDf
 
 def shift(df):
     df.close = df.close - df.close.shift()
     return df
 
-
-def scoreCal(norm_input_list, norm_target_list, norm_output_list):
+def scoreCal(norm_input_list, norm_target_list, norm_output_list, variation = [], count_variation = True):
 
     df = pd.read_csv('../data/TBrain_Round2_DataSet_20180331/tetfp.csv',encoding = 'cp950')
     df = pd.DataFrame(df) 
@@ -78,17 +80,25 @@ def scoreCal(norm_input_list, norm_target_list, norm_output_list):
         score_list = []
         last_target_price = denorm_input[-1].round(2)
         last_output_price = denorm_input[-1].round(2)
+        
         for i in range(5):
             score = 0
             target_price = denorm_target[i].round(2)
             output_price = denorm_output[i].round(2)
-            diff_target = target_price - last_target_price
-            diff_ouput = output_price - last_output_price           
-            last_target_price = target_price
-            last_output_price = output_price
-
-            if (diff_target*diff_ouput > 0 or diff_target == diff_ouput):
-                score += 0.5
+            
+            ## calculate variation score
+            if count_variation:
+                diff_target = target_price - last_target_price
+                diff_ouput = output_price - last_output_price           
+                last_target_price = target_price
+                last_output_price = output_price
+                if variation:
+                    if (diff_target*variation[i] > 0 or diff_target == diff_ouput):
+                        score += 0.5                   
+                elif (diff_target*diff_ouput > 0 or diff_target == diff_ouput):
+                    score += 0.5
+            
+            ## calculate absolute price score
             score += (target_price - abs(target_price - output_price))/target_price*0.5
             score_list.append(score)
         weighted_score = map(lambda x,y:x*y,score_list,[0.1,0.15,0.2,0.25,0.3])
@@ -110,19 +120,17 @@ if __name__ == '__main__':
 
         codeDf = df[df.code == code].reset_index(drop=True)
 
-        # normalize and shift 
+        ## normalize and shift 
         # codeDf = shift(codeDf)
         codeDf = codeDf.dropna(axis=0, how='any')
         codeDf = normalize(codeDf)
-        
-        # concatenate data for 20 days
-        codeDf = concat(codeDf)
-        # print(codeDf.to_string())
 
-        # split the data
-        train_df, test_df = split(codeDf)
-        train_df.to_csv('../data/train.csv')
-        test_df.to_csv('../data/test.csv')
-        # print(train_df)
-        # print(test_df)
+        ## concatenate data for 20 days
+        codeDf = concat(codeDf)
+
+        ## split the data
+        trainDf, testDf = split(codeDf)
+        trainDf.to_csv('../data/train.csv')
+        testDf.to_csv('../data/test.csv')
+
 
