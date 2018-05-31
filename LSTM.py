@@ -6,7 +6,7 @@ import pandas as pd
 from torch.autograd import Variable
 from torch.utils.data.dataset import Dataset
 from dataLoader import scoreCal
-
+from dataLoader import codeDenormalize
 
 class Sequence(nn.Module):
     def __init__(self):
@@ -50,20 +50,20 @@ class ETFDataset(Dataset):
         label = torch.Tensor(label).double()
         return data, label
 
-class ETFtestset(Dataset):
-    def __init__(self, csv_file, transforms=None):
-        self.ETF = pd.read_csv(csv_file)
-        self.transforms = transforms
+# class ETFtestset(Dataset):
+#     def __init__(self, csv_file, transforms=None):
+#         self.ETF = pd.read_csv(csv_file)
+#         self.transforms = transforms
 
-    def __len__(self):
-        return len(self.ETF)
+#     def __len__(self):
+#         return len(self.ETF)
 
-    def __getitem__(self, index):
-        data = self.ETF.iloc[index, 1:-5].tolist()
-        label = self.ETF.iloc[index, -5:].tolist()
-        data = torch.Tensor(data).double()
-        label = torch.Tensor(label).double()
-        return data, label
+#     def __getitem__(self, index):
+#         data = self.ETF.iloc[index, 1:-5].tolist()
+#         label = self.ETF.iloc[index, -5:].tolist()
+#         data = torch.Tensor(data).double()
+#         label = torch.Tensor(label).double()
+#         return data, label
 
 class LSTM():
     def __init__(self):
@@ -100,8 +100,8 @@ class LSTM():
         print('Finished Training')
 
     def predict(self, test_input, future = 0):
-
-        return self.model(Variable(test_input),future).detach().numpy()
+        test_input= torch.from_numpy(np.array([test_input]))
+        return self.model(test_input, future = future).detach().numpy()
 
     def save(self, code = 50):
         filename = 'LSTM'+ str(code)
@@ -112,25 +112,41 @@ class LSTM():
         filename = 'LSTM'+ str(code)
         filepath = './model/' + filename
         self.model.load_state_dict(torch.load(filepath))
+
+    def predictTestSet(self, testpath, future=4):
+        df = pd.read_csv(testpath)
+        if future <= 0:
+            record_list = torch.from_numpy(df.iloc[:,1:].values)       
+        else:
+            record_list = torch.from_numpy(df.iloc[:,1:(-future-1)].values)
+        return self.model(record_list, future = future).detach().numpy()    
     
-    def score(self, testpath, batch_size=4, count_variation=True):
+    # def score(self, testpath, batch_size=4, count_variation=True, code=50):
 
-        testset = ETFtestset(testpath)
-        testloader = torch.utils.data.DataLoader(testset, batch_size,shuffle=False, num_workers=0)
-        score = 0
-        total = 0
-        for data in testloader:
-            inputs, labels = data
-            outputs = self.model(Variable(inputs),future = 4)
+    #     testset = ETFtestset(testpath)
+    #     testloader = torch.utils.data.DataLoader(testset, batch_size,shuffle=False, num_workers=0)
+    #     score = 0
+    #     total = 0
+    #     for data in testloader:
+    #         inputs, labels = data
+    #         print(inputs)
+    #         outputs = self.model(Variable(inputs),future = 4)
 
-            inputs_data = inputs.detach().numpy()
-            outputs_data = outputs.detach().numpy()[:,-5:]
-            labels_data = labels.detach().numpy()
+    #         inputs_data = inputs.detach().numpy()
+    #         outputs_data = outputs.detach().numpy()[:,-5:]
+    #         labels_data = labels.detach().numpy()
 
-            score += scoreCal(inputs_data, labels_data, outputs_data, count_variation=count_variation)
-            total +=1
-        return score/total    
+    #         # score += scoreCal(inputs_data, labels_data, outputs_data, count_variation=count_variation)
+    #         total +=1
+    #     return score/total    
 
-
-
+# if __name__ == '__main__':
+   
+#     code = 50
+#     trainPath = '../data/train'+str(code)+'.csv'
+#     testPath = '../data/test'+str(code)+'.csv'
+#     lstm = LSTM()
+#     lstm.fit(trainPath, n_epoch=0)
+#     # lstm.score(testPath)
+#     print(lstm.predictTestSet(testPath))
 

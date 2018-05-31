@@ -79,7 +79,7 @@ class ANN():
         print('Finished Training')
 
     def predict(self, test_input):
-
+        test_input= torch.Tensor(np.array([test_input]))
         return self.model(Variable(test_input)).detach().numpy()
 
     def save(self, code = 50):
@@ -91,21 +91,31 @@ class ANN():
         filename = 'ANN'+ str(code)
         filepath = './model/' + filename
         self.model.load_state_dict(torch.load(filepath))
-    
-    def score(self, testpath, batch_size=4, count_variation=True):
 
+    def predictTestSet(self, testpath):
         testset = ETFDataset(testpath)
-        testloader = torch.utils.data.DataLoader(testset, batch_size,shuffle=False, num_workers=0)
-        score = 0
-        total = 0
+        testloader = torch.utils.data.DataLoader(testset,shuffle=False)
+        output_list = []
         for data in testloader:
             inputs, labels = data
             outputs = self.model(Variable(inputs))
+            output_list.append(outputs.detach().numpy())
+        return output_list
 
-            inputs_data = inputs.detach().numpy()
-            outputs_data = outputs.detach().numpy()[:,-5:]
-            labels_data = labels.detach().numpy()
+    # def score(self, testpath, batch_size=4, count_variation=True):
 
-            score += scoreCal(inputs_data, labels_data, outputs_data, count_variation=count_variation)
-            total +=1
-        return score/total    
+    #     testset = ETFDataset(testpath)
+    #     testloader = torch.utils.data.DataLoader(testset, batch_size,shuffle=False, num_workers=0)
+    #     score = 0
+    #     total = 0
+    #     for data in testloader:
+    #         inputs, labels = data
+    #         outputs = self.model(Variable(inputs))
+
+    #         inputs_data = inputs.detach().numpy()
+    #         outputs_data = outputs.detach().numpy()[:,-5:]
+    #         labels_data = labels.detach().numpy()
+
+    #         score += scoreCal(inputs_data, labels_data, outputs_data, count_variation=count_variation)
+    #         total +=1
+    #     return score/total    

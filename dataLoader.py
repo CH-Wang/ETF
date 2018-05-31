@@ -17,7 +17,7 @@ def normalize(df):
     return df
 
 def denormalize(df, norm_value):
-    df = rename(df)
+## norm_value : [[1,0,1,..], [0,1,0,..],...]
     original_value = df['close'].values.reshape(-1,1)
     min_max_scaler = preprocessing.MinMaxScaler()
     min_max_scaler.fit_transform(original_value)
@@ -27,6 +27,12 @@ def denormalize(df, norm_value):
         denorm.append(min_max_scaler.inverse_transform(i).reshape(-1))
     return denorm
 
+def codeDenormalize(data_list, code = 50, filepath = '../data/TBrain_Round2_DataSet_20180331/tetfp.csv', encoding = 'cp950'):
+    df = pd.read_csv(filepath, encoding=encoding)
+    df = pd.DataFrame(df)
+    df = rename(df)
+    df = df[df.code == code].reset_index(drop=True) 
+    return  denormalize(df, data_list)
 
 def dropCol(df):
     df = df.drop(['date','code','abbr','open','high','low'], axis=1)
@@ -64,27 +70,20 @@ def shift(df):
     df.close = df.close - df.close.shift()
     return df
 
-def scoreCal(norm_input_list, norm_target_list, norm_output_list, variation = [], count_variation = True):
-
-    df = pd.read_csv('../data/TBrain_Round2_DataSet_20180331/tetfp.csv',encoding = 'cp950')
-    df = pd.DataFrame(df) 
-
+def scoreCal(data_list, target_list, output_list, variation = [], count_variation = True):
+## data_list : [[1,2,3,4,5], [1,2,3,4,5],...]
     avg_score = 0
-    for j, norm_input in enumerate(norm_input_list):
-        norm_target = norm_target_list[j]
-        norm_output = norm_output_list[j]
-        denorm_input = denormalize(df, norm_input)
-        denorm_target = denormalize(df, norm_target)
-        denorm_output = denormalize(df, norm_output)
-
+    for j, data in enumerate(data_list):
+        target = target_list[j]
+        output = output_list[j]
         score_list = []
-        last_target_price = denorm_input[-1].round(2)
-        last_output_price = denorm_input[-1].round(2)
+        last_target_price = data[-1].round(2)
+        last_output_price = data[-1].round(2)
         
         for i in range(5):
             score = 0
-            target_price = denorm_target[i].round(2)
-            output_price = denorm_output[i].round(2)
+            target_price = target[i].round(2)
+            output_price = output[i].round(2)
             
             ## calculate variation score
             if count_variation:
@@ -104,8 +103,8 @@ def scoreCal(norm_input_list, norm_target_list, norm_output_list, variation = []
         weighted_score = map(lambda x,y:x*y,score_list,[0.1,0.15,0.2,0.25,0.3])
         avg_score += sum(weighted_score)
 
-    avg_score = avg_score/ len(norm_input_list)
-    return sum(avg_score)
+    avg_score = avg_score/ len(data_list)
+    return avg_score
 
 
 if __name__ == '__main__':
