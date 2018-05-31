@@ -54,7 +54,7 @@ class LSTM():
     def __init__(self):
         self.model = Sequence().double()
 
-    def fit(self, trainpath, n_epoch = 15, lr = 0.2, batch_size=4):
+    def fit(self, trainpath, n_epoch=15, lr=0.001, batch_size=4):
         
         trainset = ETFDataset(trainpath)
         trainloader = torch.utils.data.DataLoader(trainset, batch_size,shuffle=True, num_workers=0)
@@ -62,7 +62,7 @@ class LSTM():
         np.random.seed(0)
         torch.manual_seed(0)
         criterion = nn.MSELoss()
-        optimizer = optim.SGD(self.model.parameters(), lr)
+        optimizer = optim.Adam(self.model.parameters(), lr=lr)
         
         for epoch in range(n_epoch): 
             running_loss = 0.0

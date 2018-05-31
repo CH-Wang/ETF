@@ -4,7 +4,7 @@ from sklearn import preprocessing
 
 def rename(df):
 ##    name_list = ['代碼', '日期', '中文簡稱', '開盤價(元)', '最高價(元)', '最低價(元)', '收盤價(元)', '成交張數(張)']
-    df.columns =['code','date','abbr','open','high','low','close','amount']
+    df.columns=['code','date','abbr','open','high','low','close','amount']
     
     for column in df.columns[3:]:
         df[column] = df[column].apply(lambda x: float(str(x).replace(',','')))
@@ -115,7 +115,7 @@ if __name__ == '__main__':
 
     ETFcode = [50,51,52,53,54,55,56,57,58,59,6201,6203,6204,6208,690,692,701,713]
     
-    for code in [50]:
+    for code in ETFcode:
 
         codeDf = df[df.code == code].reset_index(drop=True)
 
