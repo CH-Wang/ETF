@@ -2,7 +2,11 @@ import torch
 import torch.nn as nn
 
 class ETFPriceLoss(nn.Module):
-
+    """
+        Calculate the price part of the ETF competion score
+        label type: a batch of tensors recoding ETF close price of 5 days
+        output type: a batch of tensors recoding ETF close price of 5 days
+    """
     def __init__(self):
         super(ETFPriceLoss, self).__init__()
 
@@ -18,7 +22,13 @@ class ETFPriceLoss(nn.Module):
         return loss
 
 class ETFLoss(nn.Module):
-
+    """
+        Calculate the ETF competion score
+        label type: a batch of tensors recoding ETF close price of 5 days
+        output type: a batch of tensors recoding ETF close price of 5 days
+        data type: a batch of tensors recoding ETF close price, the last element
+        in each tensor should be the last close price 
+    """
     def __init__(self):
         super(ETFLoss, self).__init__()
 
