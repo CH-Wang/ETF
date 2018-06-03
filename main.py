@@ -65,9 +65,9 @@ if __name__ == '__main__':
 
         ## SVM
         svm = SVM()
-        # svm.fit(train_input,train_target)
-        # svm.save(code=code)
-        svm.load(code=code)
+        svm.fit(train_input,train_target)
+        svm.save(code=code)
+        # svm.load(code=code)
         test_output = svm.predict(test_input)
 
         ## denormalize
@@ -88,9 +88,9 @@ if __name__ == '__main__':
 
         ## ANN
         ann = ANN()
-        # ann.fit(trainPath, n_epoch=50)
-        # ann.save(code=code)
-        ann.load(code=code)
+        ann.fit(trainPath, n_epoch=50)
+        ann.save(code=code)
+        # ann.load(code=code)
         test_output = ann.predictTestSet(testPath)
 
         ## denormalize
@@ -112,9 +112,9 @@ if __name__ == '__main__':
         ## LSTM
         future = 4
         lstm = LSTM()
-        # lstm.fit(trainPath, n_epoch=100)
-        # lstm.save(code=code)
-        lstm.load(code=code)
+        lstm.fit(trainPath, n_epoch=100)
+        lstm.save(code=code)
+        # lstm.load(code=code)
         test_output = lstm.predictTestSet(testPath, future=future)
 
         ## denormalize
@@ -146,4 +146,4 @@ if __name__ == '__main__':
         resultDf = resultDf.append(pd.DataFrame(result_list, columns = columnName))
     
     ## save results
-    # resultDf.to_csv(resultPath)
+    resultDf.to_csv(resultPath)
