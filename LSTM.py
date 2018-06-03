@@ -7,6 +7,7 @@ from torch.autograd import Variable
 from torch.utils.data.dataset import Dataset
 from dataLoader import scoreCal
 from dataLoader import codeDenormalize
+from loss import ETFLSTMLoss
 
 class Sequence(nn.Module):
     def __init__(self):
@@ -61,7 +62,7 @@ class LSTM():
         
         np.random.seed(0)
         torch.manual_seed(0)
-        criterion = nn.MSELoss()
+        criterion = ETFLSTMLoss()
         optimizer = optim.Adam(self.model.parameters(), lr=lr)
         
         for epoch in range(n_epoch): 
@@ -71,7 +72,7 @@ class LSTM():
                 inputs, labels = Variable(inputs), Variable(labels)
                 optimizer.zero_grad()
                 outputs = self.model(inputs)
-                loss = criterion(outputs, labels)
+                loss = criterion(outputs, labels, inputs)
                 loss.backward()
                 optimizer.step()
 

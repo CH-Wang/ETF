@@ -55,3 +55,34 @@ class ETFLoss(nn.Module):
         loss = torch.mean(loss)
 
         return loss
+
+class ETFLSTMLoss(nn.Module):
+    """
+        Calculate the ETF competion score
+        label type: a batch of tensors recoding ETF close price of n days
+        output type: a batch of tensors recoding ETF close price of n days
+        data type: a batch of tensors recoding ETF close price, the first element
+        in each tensor should be the first close price used for prediction
+    """
+    def __init__(self):
+        super(ETFLSTMLoss, self).__init__()
+
+    def forward(self, label, output, data):
+        ## price score
+        part1 = torch.abs(torch.add(label, -1, output))
+        part1 = torch.add(label, -1, part1)
+        part1 = torch.div(part1, label)
+        ## variation score
+        outputLength = output[0].size()[0] 
+        pastLabel = data
+        pastOutput = torch.cat((data[:,0:1],output[:,:-1]), 1)
+        varLabel = torch.sign(torch.add(label, -1, pastLabel))
+        varOutput = torch.sign(torch.add(output, -1, pastOutput))
+        part2 = torch.eq(varLabel, varOutput).double()
+        ## total score
+        loss = torch.add(part1, 1, part2)
+        loss = torch.sum(loss, dim=1)
+        loss = torch.mul(loss, -0.5/outputLength)
+        loss = torch.mean(loss)
+
+        return loss
