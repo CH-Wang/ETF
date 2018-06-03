@@ -8,7 +8,7 @@ import torch.optim as optim
 from torch.utils.data.dataset import Dataset
 from torch.autograd import Variable
 from dataLoader import scoreCal
-from loss import ETFPriceLoss
+from loss import ETFLoss
 
 
 
@@ -55,7 +55,7 @@ class ANN():
         trainloader = torch.utils.data.DataLoader(trainset, batch_size,shuffle=True, num_workers=0)
         
 
-        criterion = ETFPriceLoss()
+        criterion = ETFLoss()
         optimizer = optim.Adam(self.model.parameters(), lr=lr)
 
         for epoch in range(n_epoch):
@@ -66,7 +66,7 @@ class ANN():
                 inputs, labels = Variable(inputs), Variable(labels)
                 optimizer.zero_grad()
                 outputs = self.model(inputs)
-                loss = criterion(outputs, labels)
+                loss = criterion(outputs, labels, inputs)
                 loss.backward()
                 optimizer.step()
 
