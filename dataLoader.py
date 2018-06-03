@@ -87,14 +87,14 @@ def scoreCal(data_list, target_list, output_list, variation = [], count_variatio
             
             ## calculate variation score
             if count_variation:
-                diff_target = target_price - last_target_price
-                diff_ouput = output_price - last_output_price           
+                var_target = np.sign(target_price - last_target_price)
+                var_ouput = np.sign(output_price - last_output_price)           
                 last_target_price = target_price
                 last_output_price = output_price
                 if variation:
-                    if (diff_target*variation[i] > 0 or diff_target == diff_ouput):
+                    if (var_target == variation[i]):
                         score += 0.5                   
-                elif (diff_target*diff_ouput > 0 or diff_target == diff_ouput):
+                elif (var_target == var_ouput):
                     score += 0.5
             
             ## calculate absolute price score
