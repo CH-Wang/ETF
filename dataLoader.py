@@ -77,13 +77,13 @@ def scoreCal(data_list, target_list, output_list, variation = [], count_variatio
         target = target_list[j]
         output = output_list[j]
         score_list = []
-        last_target_price = data[-1].round(2)
-        last_output_price = data[-1].round(2)
+        last_target_price = data[-1]
+        last_output_price = data[-1]
         
         for i in range(5):
             score = 0
-            target_price = target[i].round(2)
-            output_price = output[i].round(2)
+            target_price = target[i]
+            output_price = output[i]
             
             ## calculate variation score
             if count_variation:
