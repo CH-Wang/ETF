@@ -17,7 +17,10 @@ def normalize(df):
     return df
 
 def denormalize(df, norm_value):
-## norm_value : [[1,0,1,..], [0,1,0,..],...]
+    """
+        denormalize the norm_value using the "close" price of the dataframe 
+        norm_value type: list with dim(n,n), [[float,float,float,..], [float,float,float,..],...]
+    """
     original_value = df['close'].values.reshape(-1,1)
     min_max_scaler = preprocessing.MinMaxScaler()
     min_max_scaler.fit_transform(original_value)
@@ -28,6 +31,9 @@ def denormalize(df, norm_value):
     return denorm
 
 def codeDenormalize(data_list, code = 50, filepath = '../data/TBrain_Round2_DataSet_20180601/tetfp.csv', encoding = 'cp950'):
+    """
+        deciding the dataframe for denormalize,
+    """   
     df = pd.read_csv(filepath, encoding=encoding)
     df = pd.DataFrame(df)
     df = rename(df)
@@ -39,6 +45,9 @@ def dropCol(df):
     return df
 
 def concat(df, ndays=20):
+    """
+        concatenate the "close" price for days = ndays
+    """
     newDf = pd.DataFrame(columns=[str(i) for i in range(ndays)])
     data = []
     new_loc = 0
@@ -71,7 +80,21 @@ def shift(df):
     return df
 
 def scoreCal(data_list, target_list, output_list, variation = [], count_variation = True):
-## data_list : [[1,2,3,4,5], [1,2,3,4,5],...]
+    """
+        Calculate ETF score using the "denormalized" data
+        data_list records the input data for prediction,
+        target_list records the label for input,
+        output_list records the prediction
+        data_list type : list with dim(n,n), [[float,float,float,...,], [float,float,float,...,],...]
+        target_list type: list with dim(n,5), [[float,float,float,float,float], [float,float,float,float,float],...]
+        output_list type: list with dim(n,5), [[float,float,float,float,float], [float,float,float,float,float],...]
+        variaion is an optional parameter, by default the vairation score is calculate
+        by the predicted price, use this parameter to calculate varation score by customize
+        predictions.
+        variation type: int list with dim(5),[0,1,0,-1,0]
+        count_variation decideds whether to count the variation score
+    """
+
     avg_score = 0
     for j, data in enumerate(data_list):
         target = target_list[j]
