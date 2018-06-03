@@ -31,11 +31,11 @@ if __name__ == '__main__':
 
 
     ## calculate variation
-    Mon_ud = pd.DataFrame(np.sign(df['1'] - df['0']) , columns=['Mon_ud'] )
-    Tue_ud = pd.DataFrame(np.sign(df['2'] - df['1']) , columns=['Tue_ud'] )
-    Wed_ud = pd.DataFrame(np.sign(df['3'] - df['2']) , columns=['Wed_ud'] )
-    Thu_ud = pd.DataFrame(np.sign(df['4'] - df['3']) , columns=['Thu_ud'] )
-    Fri_ud = pd.DataFrame(np.sign(df['5'] - df['4']) , columns=['Fri_ud'] )        
+    Mon_ud = pd.DataFrame(np.sign(df['1'] - df['0']) , columns=['Mon_ud'] ).astype('int64')
+    Tue_ud = pd.DataFrame(np.sign(df['2'] - df['1']) , columns=['Tue_ud'] ).astype('int64')
+    Wed_ud = pd.DataFrame(np.sign(df['3'] - df['2']) , columns=['Wed_ud'] ).astype('int64')
+    Thu_ud = pd.DataFrame(np.sign(df['4'] - df['3']) , columns=['Thu_ud'] ).astype('int64')
+    Fri_ud = pd.DataFrame(np.sign(df['5'] - df['4']) , columns=['Fri_ud'] ).astype('int64')        
 
     df = pd.concat([df, Mon_ud], axis=1, sort=False)
     df = pd.concat([df, Tue_ud], axis=1, sort=False)
