@@ -43,6 +43,8 @@ if __name__ == '__main__':
     df = pd.concat([df, Thu_ud], axis=1, sort=False)
     df = pd.concat([df, Fri_ud], axis=1, sort=False)
 
+    df[['1','2','3','4','5']] = round(df[['1','2','3','4','5']] ,2)
+ 
     ## submission
     decision = 1
     dfColumns = ['code', 'Mon_ud', '1', 'Tue_ud', '2', 'Wed_ud', '3', 'Thu_ud', '4', 'Fri_ud', '5']
