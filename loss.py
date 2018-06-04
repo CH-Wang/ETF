@@ -58,7 +58,7 @@ class ETFLoss(nn.Module):
 
 class ETFLSTMLoss(nn.Module):
     """
-        Calculate the ETF competion score
+        Calculate the average ETF competion score for n days, default n=19
         label type: a batch of tensors recoding ETF close price of n days
         output type: a batch of tensors recoding ETF close price of n days
         data type: a batch of tensors recoding ETF close price, the first element
