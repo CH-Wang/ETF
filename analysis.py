@@ -21,7 +21,10 @@ if __name__ == '__main__':
 
     ## calculate score for each model
     baselineScore = baselineDf['score'].sum()
-    svmScore = svmDf['score'].sum()    # print('baselineScore:', baselineScore, '\n') 
+    svmScore = svmDf['score'].sum()
+    annScore = annDf['score'].sum()
+    lstmScore = lstmDf['score'].sum()    
+    # print('baselineScore:', baselineScore, '\n') 
     # print('svmScore:',svmScore, '\n') 
     # print('annScore:',annScore, '\n') 
     # print('lstmScore:',lstmScore, '\n') 

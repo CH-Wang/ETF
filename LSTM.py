@@ -45,8 +45,8 @@ class ETFDataset(Dataset):
         return len(self.ETF)
 
     def __getitem__(self, index):
-        data = self.ETF.iloc[index, 1:-1].tolist()
-        label = self.ETF.iloc[index, 2:].tolist()
+        data = self.ETF.iloc[index, :-1].tolist()
+        label = self.ETF.iloc[index, 1:].tolist()
         data = torch.Tensor(data).double()
         label = torch.Tensor(label).double()
         return data, label
@@ -102,9 +102,9 @@ class LSTM():
     def predictTestSet(self, testpath, future=4):
         df = pd.read_csv(testpath)
         if future <= 0:
-            record_list = torch.from_numpy(df.iloc[:,1:].values)       
+            record_list = torch.from_numpy(df.iloc[:,:].values)       
         else:
-            record_list = torch.from_numpy(df.iloc[:,1:(-future-1)].values)
+            record_list = torch.from_numpy(df.iloc[:,:(-future-1)].values)
         return self.model(record_list, future = future).detach().numpy()    
     
 

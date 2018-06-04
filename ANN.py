@@ -38,8 +38,8 @@ class ETFDataset(Dataset):
         return len(self.ETF)
 
     def __getitem__(self, index):
-        data = self.ETF.iloc[index, 1:16].tolist()
-        label = self.ETF.iloc[index, 16:].tolist()
+        data = self.ETF.iloc[index, :15].tolist()
+        label = self.ETF.iloc[index, 15:].tolist()
         data = torch.Tensor(data)
         label = torch.Tensor(label)
         return data, label

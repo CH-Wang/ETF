@@ -157,7 +157,7 @@ if __name__ == '__main__':
         trainPath = '../data/train'+str(code)+'.csv'
         testPath = '../data/test'+str(code)+'.csv'
 
-        trainDf.to_csv(trainPath)
-        testDf.to_csv(testPath)
+        trainDf.to_csv(trainPath, index=False)
+        testDf.to_csv(testPath, index=False)
 
 
