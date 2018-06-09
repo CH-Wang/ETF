@@ -30,7 +30,7 @@ def denormalize(df, norm_value):
         denorm.append(min_max_scaler.inverse_transform(i).reshape(-1))
     return denorm
 
-def codeDenormalize(data_list, code = 50, filepath = '../data/TBrain_Round2_DataSet_20180601/tetfp.csv', encoding = 'cp950'):
+def codeDenormalize(data_list, code = 50, filepath = '../data/TBrain_Round2_DataSet_20180608/tetfp.csv', encoding = 'cp950'):
     """
         deciding the dataframe for denormalize,
     """   
