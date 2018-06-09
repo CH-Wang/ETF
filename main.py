@@ -65,9 +65,9 @@ if __name__ == '__main__':
 
         ## SVM
         svm = SVM()
-        # svm.fit(train_input,train_target)
-        # svm.save(code=code)
-        svm.load(code=code)
+        svm.fit(train_input,train_target)
+        svm.save(code=code)
+        # svm.load(code=code)
         test_output = svm.predict(test_input)
 
         ## denormalize
@@ -88,9 +88,9 @@ if __name__ == '__main__':
 
         ## ANN
         ann = ANN()
-        # ann.fit(trainPath, n_epoch=50)
-        # ann.save(code=code)
-        ann.load(code=code)
+        ann.fit(trainPath, n_epoch=50)
+        ann.save(code=code)
+        # ann.load(code=code)
         test_output = ann.predictTestSet(testPath)
 
         ## denormalize
@@ -112,9 +112,9 @@ if __name__ == '__main__':
         ## LSTM
         future = 4
         lstm = LSTM()
-        # lstm.fit(trainPath, n_epoch=100)
-        # lstm.save(code=code)
-        lstm.load(code=code)
+        lstm.fit(trainPath, n_epoch=100)
+        lstm.save(code=code)
+        # lstm.load(code=code)
         test_output = lstm.predictTestSet(testPath, future=future)
 
         ## denormalize
@@ -135,15 +135,15 @@ if __name__ == '__main__':
         print('lstm prediction:', lstm_predict, '\n')
 
         ## summarize results
-        # last_day_close = codeDenormalize(last_data, code=code)[-1][0]
+        last_day_close = codeDenormalize(last_data, code=code)[-1][0]
 
-        # baseline_result = [code, baseline2_score, baseline1_abs_score, last_day_close] + baseline_predict[0].tolist()
-        # svm_result = [code, svm_score, svm_abs_score, last_day_close] + svm_predict[0].tolist()
-        # ann_result = [code, ann_score, ann_abs_score, last_day_close] + ann_predict[0].tolist()
-        # lstm_result = [code, lstm_score, lstm_abs_score, last_day_close] + lstm_predict[0].tolist()
+        baseline_result = [code, baseline2_score, baseline1_abs_score, last_day_close] + baseline_predict[0].tolist()
+        svm_result = [code, svm_score, svm_abs_score, last_day_close] + svm_predict[0].tolist()
+        ann_result = [code, ann_score, ann_abs_score, last_day_close] + ann_predict[0].tolist()
+        lstm_result = [code, lstm_score, lstm_abs_score, last_day_close] + lstm_predict[0].tolist()
     
-        # result_list = [baseline_result, svm_result, ann_result, lstm_result]
-        # resultDf = resultDf.append(pd.DataFrame(result_list, columns = columnName))
+        result_list = [baseline_result, svm_result, ann_result, lstm_result]
+        resultDf = resultDf.append(pd.DataFrame(result_list, columns = columnName))
     
     ## save results
-    # resultDf.to_csv(resultPath)
+    resultDf.to_csv(resultPath)
