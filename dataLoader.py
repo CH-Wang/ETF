@@ -132,7 +132,7 @@ def scoreCal(data_list, target_list, output_list, variation = [], count_variatio
 
 if __name__ == '__main__':
 
-    filepath = '../data/TBrain_Round2_DataSet_20180601/tetfp.csv'
+    filepath = '../data/TBrain_Round2_DataSet_20180608/tetfp.csv'
     df = pd.read_csv(filepath,encoding = 'cp950')
     df = pd.DataFrame(df)  
     df = rename(df)
