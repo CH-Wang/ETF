@@ -24,10 +24,10 @@ if __name__ == '__main__':
     svmScore = svmDf['score'].sum()
     annScore = annDf['score'].sum()
     lstmScore = lstmDf['score'].sum()    
-    # print('baselineScore:', baselineScore, '\n') 
-    # print('svmScore:',svmScore, '\n') 
-    # print('annScore:',annScore, '\n') 
-    # print('lstmScore:',lstmScore, '\n') 
+    print('baselineScore:', baselineScore, '\n') 
+    print('svmScore:',svmScore, '\n') 
+    print('annScore:',annScore, '\n') 
+    print('lstmScore:',lstmScore, '\n') 
 
     annScore = annDf['score'].sum()
     lstmScore = lstmDf['score'].sum()
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     df[['1','2','3','4','5']] = round(df[['1','2','3','4','5']] ,2)
  
     ## submission
-    decision = 1
+    decision = 3
     dfColumns = ['code', 'Mon_ud', '1', 'Tue_ud', '2', 'Wed_ud', '3', 'Thu_ud', '4', 'Fri_ud', '5']
     submissionDf[submissionColumns] = df.loc[decision][dfColumns]
     submissionDf = submissionDf.reset_index(drop=True)

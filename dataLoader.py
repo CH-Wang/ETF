@@ -30,7 +30,7 @@ def denormalize(df, norm_value):
         denorm.append(min_max_scaler.inverse_transform(i).reshape(-1))
     return denorm
 
-def codeDenormalize(data_list, code = 50, filepath = '../data/TBrain_Round2_DataSet_20180608/tetfp.csv', encoding = 'cp950'):
+def codeDenormalize(data_list, code = 50, filepath = '../data/TBrain_Round2_DataSet_20180615/tetfp.csv', encoding = 'cp950'):
     """
         deciding the dataframe for denormalize,
     """   
@@ -132,7 +132,7 @@ def scoreCal(data_list, target_list, output_list, variation = [], count_variatio
 
 if __name__ == '__main__':
 
-    filepath = '../data/TBrain_Round2_DataSet_20180608/tetfp.csv'
+    filepath = '../data/TBrain_Round2_DataSet_20180615/tetfp.csv'
     df = pd.read_csv(filepath,encoding = 'cp950')
     df = pd.DataFrame(df)  
     df = rename(df)
